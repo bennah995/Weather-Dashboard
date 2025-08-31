@@ -4,7 +4,7 @@ export default function WeatherCard({ weather, onRefresh }) {
   if (!weather) return null;
 
   return (
-    <div className="border p-4 rounded w-full max-w-md mx-auto text-center">
+    <div className="border border-black p-4 rounded w-full max-w-md mx-auto text-center">
       <h2 className="text-xl font-bold text-blue-700 mb-2">
         {weather.name}, {weather.sys?.country}
       </h2>
