@@ -38,7 +38,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-blue-100 p-4">
+    <div className="min-h-screen min-w-screen sm:p-6 p-4 md:p-8 flex items-center flex-col bg-blue-200 p-4">
         <h1 className="text-2xl font-bold text-center mb-6 text-blue-600">Weather Dashboard</h1>
         <SearchBar onSearch={handleSearch} />
       
