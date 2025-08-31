@@ -1,35 +1,56 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState, useEffect } from "react";
+import SearchBar from "./components/SearchBar";
+import WeatherCard from "./components/WeatherCard";
+import ErrorMessage from "./components/ErrorMessage";
+import { getWeather } from "./services/weather";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [weather, setWeather] = useState(null);
+  const [error, setError] = useState("");
+  const [city, setCity] = useState("Nairobi"); // default city
+  const [loading, setLoading] = useState(false);
+
+  const fetchWeather = async (cityName) => {
+    try {
+      setLoading(true);
+      setError("");
+      const data = await getWeather(cityName);
+      setWeather(data);
+    } catch (err) {
+      setError("City not found or network error.");
+      setWeather(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchWeather(city);
+    const interval = setInterval(() => {
+      fetchWeather(city);
+    }, 5 * 60 * 1000); // 5 minutes
+    return () => clearInterval(interval);
+  }, [city]);
+
+  const handleSearch = (newCity) => {
+    setCity(newCity);
+    fetchWeather(newCity);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="min-h-screen flex items-center justify-center bg-blue-100 p-4">
+        <h1 className="text-2xl font-bold text-center mb-6 text-blue-600">Weather Dashboard</h1>
+        <SearchBar onSearch={handleSearch} />
+      
+      <div className="mt-4">
+          {error && <ErrorMessage message={error} />}
+          {loading && <p className="text-center">Loading...</p>}
+          {weather && !loading && (
+          <WeatherCard weather={weather} onRefresh={() => fetchWeather(city)} />
+        )}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
